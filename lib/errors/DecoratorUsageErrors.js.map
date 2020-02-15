@@ -1,0 +1,1 @@
+{"version":3,"file":"DecoratorUsageErrors.js","sourceRoot":"","sources":["DecoratorUsageErrors.ts"],"names":[],"mappings":";;AAAA,2CAAsC;AAEtC,MAAa,mBAAoB,SAAQ,qBAAS;CAAG;AAArD,kDAAqD;AAErD,MAAa,uBAAwB,SAAQ,mBAAmB;IAC5D,YAAY,SAAmB,EAAE,WAAmB,EAAE,WAAmB,EAAE,SAAiB;QACxF,KAAK,CAAC,IAAI,SAAS,CAAC,IAAI,wBAAwB,WAAW,2BAA2B,WAAW,EAAE,EAC/F,SAAS,CAAC,CAAC;IACnB,CAAC;CACJ;AALD,0DAKC"}
