@@ -1,0 +1,37 @@
+import { ConfigurationUtil } from "./ConfigurationDecorator";
+import { DecoratorBadArgumentError } from "../errors/BadArgumentErrors";
+import { DecoratorType, DecoratorUtil } from "../helpers/DecoratorUtils";
+import { ComponentUtil } from "./ComponentDecorator";
+import { LoggerFactory } from "../helpers/logging/LoggerFactory";
+
+let logger = LoggerFactory.getInstance();
+
+/**
+ * Decorator used for composing configuration classes by importing other configuration classes.
+ *
+ * @param configurationClasses varargs configuration classes
+ * @returns ClassDecorator for composing configuration classes
+ * */
+export function Import(...configurationClasses) {
+    return function (targetConfigurationClass) {
+        DecoratorUtil.throwOnWrongType(Import, DecoratorType.CLASS, [...arguments]);
+        ConfigurationUtil.throwWhenNotOnConfigurationClass(Import, [...arguments]);
+        let targetConfigurationData = ConfigurationUtil.getConfigurationData(targetConfigurationClass);
+        for (let configurationClass of configurationClasses) {
+            if (!ConfigurationUtil.isConfigurationClass(configurationClass)) {
+                throw new DecoratorBadArgumentError(`${configurationClass.name} is not a configuration class.`,
+                    Import, [...arguments]);
+            }
+            logger.debug(`Importing configurations from ${ComponentUtil.getComponentData(configurationClass)
+                .componentName} to ${ComponentUtil.getComponentData(targetConfigurationClass).componentName}`);
+            let configurationData = ConfigurationUtil.getConfigurationData(configurationClass);
+            targetConfigurationData.componentFactory.components.push(...configurationData.componentFactory.components);
+            targetConfigurationData.componentDefinitionPostProcessorFactory.components
+                .push(...configurationData.componentDefinitionPostProcessorFactory.components);
+            targetConfigurationData.componentPostProcessorFactory.components
+                .push(...configurationData.componentPostProcessorFactory.components);
+            targetConfigurationData.propertySourcePaths.push(...configurationData.propertySourcePaths);
+            targetConfigurationData.componentScanPaths.push(...configurationData.componentScanPaths);
+        }
+    };
+}
