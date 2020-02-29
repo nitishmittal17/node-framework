@@ -2,9 +2,7 @@ import { Component } from "./ComponentDecorator";
 import { DecoratorUtil, DecoratorType } from "../helpers/DecoratorUtils";
 
 export interface Interceptor {
-    preHandle (request, response);
-    postHandle (request, response);
-    afterCompletion (request, response);
+    preHandle (ctx);
 }
 
 export const INTERCEPTOR_DECORATOR_TOKEN = Symbol('interceptor_decorator_token');

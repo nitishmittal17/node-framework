@@ -100,7 +100,7 @@ export class RouterConfigurer {
             let interceptor = this.interceptors[i];
             if (_.isFunction(interceptor.preHandle)) {
                 try {
-                    await interceptor.preHandle(ctx)
+                    await interceptor.preHandle(ctx);
                 } catch (err) {
                     logger.debug("Error occurred in the pre handler.");
                 }
