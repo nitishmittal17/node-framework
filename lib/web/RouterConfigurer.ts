@@ -80,27 +80,12 @@ export class RouterConfigurer {
             logger.debug(`Registering route. Path: '${path}', method: ${httpMethod}. Handler: ${ComponentUtil
                 .getComponentData(handler.constructor).componentName}.${route.methodHandler}()`);
 
-            /*this.router[httpMethod](path, this.wrap(async(request, response, next) => {
-                let result;
-                try {
-                    result = await handler[route.methodHandler](request, response);
-                } catch (err) {
-                    logger.debug("Error occurred in the route handler.");
-                    next(new RouteHandlerError(`${handler.constructor.name}.${route.
-                        methodHandler} failed on ${httpMethod.toUpperCase()} ${path}`, err));
-                    return;
-                }
-                // TODO #3 saskodh: Check whether is more convenient to store in the request zone or pass on next
-                response.$$frameworkData = {
-                    view: route.view,
-                    model: result
-                };
-                next();
-            }));*/
-
+            let self = this;
             this.router[httpMethod](path, this.wrap(async(ctx, next) => {
                 let result;
+
                 try {
+                    await self.preHandler(ctx);
                     await handler[route.methodHandler](ctx);
                 } catch(err) {
 
@@ -110,38 +95,17 @@ export class RouterConfigurer {
         }
     }
 
-    private async preHandler(request, response, next) {
-        response.on('finish', async () => {
-            for (let i = this.interceptors.length - 1; i >= 0; i -= 1) {
-                let interceptor = this.interceptors[i];
-                if (_.isFunction(interceptor.afterCompletion)) {
-                    try {
-                        await interceptor.afterCompletion(request, response);
-                    } catch (err) {
-                        logger.error(`After completition failed on ${request.method} ${request.url}. Interceptor: ` +
-                            `${ComponentUtil.getComponentData(interceptor.constructor).componentName}`, err);
-                    }
-                }
-            }
-        });
-
+    private async preHandler(ctx) {
         for (let i = 0; i < this.interceptors.length; i += 1) {
             let interceptor = this.interceptors[i];
             if (_.isFunction(interceptor.preHandle)) {
-                // NOTE: when the the preHandle function returns nothing the middleware chain is not broken
                 try {
-                    if (await interceptor.preHandle(request, response) === false) {
-                        return;
-                    }
+                    await interceptor.preHandle(ctx)
                 } catch (err) {
                     logger.debug("Error occurred in the pre handler.");
-                    next(new InterceptorError(`${ComponentUtil.getComponentData(interceptor.constructor)
-                        .componentName}.preHandle failed on ${request.method} ${request.url}`, err));
-                    return;
                 }
             }
         }
-        next();
     }
 
     private async postHandler(request, response, next) {

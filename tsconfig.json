@@ -5,8 +5,7 @@
     "sourceMap": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "declaration": true,
-    "outDir": "dist"
+    "allowSyntheticDefaultImports": true
   },
-  "exclude": [ "node_modules", "scripts", "dist" ]
+  "exclude": ["node_modules"]
 }
