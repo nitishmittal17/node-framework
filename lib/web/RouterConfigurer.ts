@@ -77,6 +77,7 @@ export class RouterConfigurer {
         for (let [route, handler] of this.routeHandlers.entries()) {
             let httpMethod = route.requestConfig.method;
             let path = route.requestConfig.path;
+            path = '/api' + path;
             logger.debug(`Registering route. Path: '${path}', method: ${httpMethod}. Handler: ${ComponentUtil
                 .getComponentData(handler.constructor).componentName}.${route.methodHandler}()`);
 
