@@ -83,16 +83,10 @@ export class RouterConfigurer {
 
             let self = this;
             this.router[httpMethod](path, this.wrap(async(ctx, next) => {
-                let result;
-
-                try {
-                    await self.preHandler(ctx);
-                    await handler[route.methodHandler](ctx);
-                } catch(err) {
-
-                }
+                await self.preHandler(ctx);
+                await handler[route.methodHandler](ctx);
                 await next();
-            }))
+            }));
         }
     }
 
@@ -100,11 +94,7 @@ export class RouterConfigurer {
         for (let i = 0; i < this.interceptors.length; i += 1) {
             let interceptor = this.interceptors[i];
             if (_.isFunction(interceptor.preHandle)) {
-                try {
-                    await interceptor.preHandle(ctx);
-                } catch (err) {
-                    logger.debug("Error occurred in the pre handler.");
-                }
+                await interceptor.preHandle(ctx);
             }
         }
     }
